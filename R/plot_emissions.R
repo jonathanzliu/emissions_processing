@@ -1,6 +1,7 @@
 #' @title Plot Hourly Emissions
 #' @description Input an EIC code and obtain a facet plot of estimated hourly emissions, by month and day of week
 #' @import tidyverse
+#' @import ggplot2
 #' @param df Cross-referencing table
 #' @param eic EIC code
 #' @param dow Day of the week
