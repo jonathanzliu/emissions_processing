@@ -13,6 +13,10 @@ plot_emissions <- function(df = atref, eic, dow) {
     filter(day.of.week == dow, hourly_ratio != 0, monthly_ratio != 0) %>%
     mutate(month = factor(month, levels = month.name))
 
+  if(nrow(emissions) == 0) {
+    stop("No data available")
+  }
+
   p <- ggplot(data = emissions) +
     geom_bar(aes(x = hour, y = Emissions, fill = Pollutant), stat = "identity") +
     theme(legend.position = "none") +
