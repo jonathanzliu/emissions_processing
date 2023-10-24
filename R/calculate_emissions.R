@@ -1,6 +1,8 @@
 #' @title Get Hourly Emissions
 #' @description Input an EIC code and obtain a data frame (within a list) of estimated hourly emissions, by month and day of week
-#' @import dplyr
+#' @import tidyverse
+#' @import plyr
+#' @import tidyr
 #' @param df Cross-referencing table
 #' @param eic EIC code
 #' @details Note: only works when the four counties use the same profile codes for a given EIC (i.e. the four counties have to have the same temporal profile)
