@@ -1,6 +1,7 @@
 #' @title Get Time Codes
 #' @description Input an EIC code and obtain a named vector of profile codes in the South Coast Basin
 #' @import tidyverse
+#' @import stringr
 #' @param df Cross-referencing table
 #' @param eic EIC code
 #' @details Note: only works when the four counties use the same profile codes for a given EIC (i.e. the four counties have to have the same temporal profile)
