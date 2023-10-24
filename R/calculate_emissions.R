@@ -1,8 +1,8 @@
 #' @title Get Hourly Emissions
 #' @description Input an EIC code and obtain a data frame (within a list) of estimated hourly emissions, by month and day of week
 #' @import tidyverse
-#' @import plyr
-#' @import tidyr
+#' @importFrom plyr join_all
+#' @importFrom tidyr pivot_longer
 #' @param df Cross-referencing table
 #' @param eic EIC code
 #' @details Note: only works when the four counties use the same profile codes for a given EIC (i.e. the four counties have to have the same temporal profile)
@@ -65,5 +65,11 @@ calculate_emissions <- function(df = atref, eic) {
         pivot_longer(cols = all_of(pollutants), names_to = "Pollutant", values_to = "Emissions")
 
     })
+
+  if(length(emissions_df) == 1) {
+    emissions_df <- emissions_df[[1]]
+  }
+
+  return(emissions_df)
 
 }
