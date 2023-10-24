@@ -8,11 +8,7 @@
 
 get_code_table <- function(df = atref, eic) {
 
-<<<<<<< HEAD
   if(!(eic %in% unique(df$EIC))) {
-=======
-  if(eic %in% unique(df$EIC)) {
->>>>>>> 45d6e57a18a48890fb924375bdd52e2f931a3990
     stop("EIC not found")
   }
 
