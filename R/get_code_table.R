@@ -8,6 +8,10 @@
 
 get_code_table <- function(df = atref, eic) {
 
+  if(!(eic %in% unique(df$EIC))) {
+    stop("EIC not found")
+  }
+
   code_table <- df %>%
     filter(EIC == eic, `Area Code` %in% sc_counties) %>%
     select(!c(a, b, c, d, zero, Comment))
