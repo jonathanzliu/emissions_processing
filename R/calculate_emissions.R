@@ -1,4 +1,4 @@
-#' @title Get Temporal Profiles
+#' @title Get Hourly Emissions
 #' @description Input an EIC code and obtain a data frame (within a list) of estimated hourly emissions, by month and day of week
 #' @import dplyr
 #' @param df Cross-referencing table
