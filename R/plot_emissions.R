@@ -12,7 +12,11 @@
 plot_emissions <- function(df = atref, eic, dow) {
 
   emissions <- calculate_emissions(eic = eic) %>%
-    filter(day.of.week == dow, hourly_ratio != 0, monthly_ratio != 0) %>%
+    filter(day.of.week == dow) %>%
+    group_by(month) %>%
+    mutate(month_sum = sum(Emissions)) %>%
+    filter(month_sum > 0) %>%
+    select(!month_sum) %>%
     mutate(month = factor(month, levels = month.name))
 
   if(nrow(emissions) == 0) {

@@ -55,7 +55,7 @@ calculate_emissions <- function(df = atref, eic) {
             left_join(monthly) %>%
             left_join(weekly) %>%
             mutate(
-              emissions = annual_emi*monthly_ratio*weekly_ratio*(12*7/365)*hourly_ratio,
+              emissions = annual_emi[f]*monthly_ratio*weekly_ratio*(12*7/365)*hourly_ratio,
             )
 
           if(length(unique(ratio_collection$weekly_ratio) == 1)) {
@@ -68,7 +68,7 @@ calculate_emissions <- function(df = atref, eic) {
 
         }) %>%
           rbindlist() %>%
-          group_by(month, day.of.week, hour, hourly_ratio, monthly_ratio, weekly_ratio) %>%
+          group_by(month, day.of.week, hour) %>%
           summarize(emissions = sum(emissions))
 
         names(county_sums)[names(county_sums) == "emissions"] <- e # adding in the weights
