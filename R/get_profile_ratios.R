@@ -9,35 +9,42 @@
 
 get_profile_ratios <- function(df = atref, eic) {
 
-  time_codes <- get_time_codes(eic = eic)
+  time_codes <- get_code_table(eic = eic) %>%
+    rename(area_code = `Area Code`) %>%
+    split(.$area_code) %>%
+    lapply(get_time_codes, eic = eic, df = atref)
 
   ptpro_ratios <- names(ptpro_list) %>%
     lapply(\(z) {
 
       df <- ptpro_list[[z]]
 
-      ratio_row <- df[which(df$Code == time_codes[z]),] %>%
-        select(!c(Code, Comment)) %>%
-        t %>%
-        as.data.frame() %>%
-        mutate(z = 1:nrow(.))
+      ratio_rows <- lapply(time_codes, \(a) {
 
-      names(ratio_row) <- c(
-        paste0(z, "_ratio"),
-        z %>%
-          str_remove_all("ly")
-      )
-      if(z == "monthly") {
-        ratio_row <- ratio_row %>%
-          mutate(month = month.name[month])
-      } else if(z == "weekly") {
-        ratio_row <- ratio_row %>%
-          mutate(week = dayofweek[week]) %>%
-          rename(day.of.week = week)
-      }
+        ratio_row <- df[which(df$Code == a[z]),] %>%
+          select(!c(Code, Comment)) %>%
+          t %>%
+          as.data.frame() %>%
+          mutate(z = 1:nrow(.))
+
+        names(ratio_row) <- c(
+          paste0(z, "_ratio"),
+          z %>%
+            str_remove_all("ly")
+        )
+        if(z == "monthly") {
+          ratio_row <- ratio_row %>%
+            mutate(month = month.name[month])
+        } else if(z == "weekly") {
+          ratio_row <- ratio_row %>%
+            mutate(week = dayofweek[week]) %>%
+            rename(day.of.week = week)
+        }
 
 
-      return(ratio_row)
+        return(ratio_row)
+
+      })
 
     })
 

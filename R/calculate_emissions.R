@@ -3,6 +3,7 @@
 #' @importFrom dplyr group_by summarize filter select left_join
 #' @importFrom plyr join_all
 #' @importFrom tidyr pivot_longer
+#' @importFrom data.table rbindlist
 #' @param df Cross-referencing table
 #' @param eic EIC code
 #' @details Note: only works when the four counties use the same profile codes for a given EIC (i.e. the four counties have to have the same temporal profile)
@@ -25,41 +26,54 @@ calculate_emissions <- function(df = atref, eic) {
       # select columns and summarize
       c %>%
         dplyr::select(FIPS_gai, EIC, POLL, ANN_VALUE) %>%
-        group_by(POLL) %>%
-        summarize(Emission = sum(ANN_VALUE))
+        rename(Emission = ANN_VALUE)
 
     }) %>%
     lapply(\(d) {
-
 
       pollutants <- unique(d$POLL)
       emission <- lapply(pollutants, \(e) {
 
         annual_emi <- d %>%
           filter(POLL == e) %>%
-          pull(Emission)
+          select(FIPS_gai, Emission) %>%
+          split(.$FIPS_gai) %>%
+          lapply(\(dd) dd %>% pull(Emission)) %>%
+          unlist()
+
 
         daily_emi <- annual_emi/365
 
-        # making a long table of month, day of week, and hour
-        ratio_collection <- data.frame(month = rep(month.name, each = 7*24), day.of.week = rep(dayofweek, each = 24, times = 12), hour = rep(1:24, times = 12*7)) %>%
-          left_join(ptpro_ratios$hourly) %>%
-          left_join(ptpro_ratios$monthly) %>%
-          left_join(ptpro_ratios$weekly) %>%
-          mutate(
-            emissions = annual_emi*monthly_ratio*weekly_ratio*(12*7/365)*hourly_ratio,
-          )
+        county_sums <- lapply(names(daily_emi), \(f) {
 
-        if(length(unique(ratio_collection$weekly_ratio) == 1)) {
-          ratio_collection <- ratio_collection %>%
-            unique()
-        }
+          hourly <- ptpro_ratios$hourly[[f]]
+          monthly <- ptpro_ratios$monthly[[f]]
+          weekly <- ptpro_ratios$weekly[[f]]
+
+          ratio_collection <- data.frame(month = rep(month.name, each = 7*24), day.of.week = rep(dayofweek, each = 24, times = 12), hour = rep(1:24, times = 12*7)) %>%
+            left_join(hourly) %>%
+            left_join(monthly) %>%
+            left_join(weekly) %>%
+            mutate(
+              emissions = annual_emi*monthly_ratio*weekly_ratio*(12*7/365)*hourly_ratio,
+            )
+
+          if(length(unique(ratio_collection$weekly_ratio) == 1)) {
+            ratio_collection <- ratio_collection %>%
+              unique()
+          }
+
+          return(ratio_collection)
 
 
-        names(ratio_collection)[names(ratio_collection) == "emissions"] <- e # adding in the weights
-        return(ratio_collection)
+        }) %>%
+          rbindlist() %>%
+          group_by(month, day.of.week, hour, hourly_ratio, monthly_ratio, weekly_ratio) %>%
+          summarize(emissions = sum(emissions))
 
+        names(county_sums)[names(county_sums) == "emissions"] <- e # adding in the weights
 
+        return(county_sums)
       }) %>%
         plyr::join_all() %>%
         pivot_longer(cols = all_of(pollutants), names_to = "Pollutant", values_to = "Emissions")

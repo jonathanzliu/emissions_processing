@@ -4,7 +4,7 @@
 \alias{get_time_codes}
 \title{Get Time Codes}
 \usage{
-get_time_codes(df = atref, eic)
+get_time_codes(df = atref, eic, code_table = 999)
 }
 \arguments{
 \item{df}{Cross-referencing table}

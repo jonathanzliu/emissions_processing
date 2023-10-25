@@ -8,9 +8,13 @@
 #' @details Note: only works when the four counties use the same profile codes for a given EIC (i.e. the four counties have to have the same temporal profile)
 #' @export
 
-get_time_codes <- function(df = atref, eic) {
+get_time_codes <- function(df = atref, eic, code_table = 999) {
 
-  code_table <- get_code_table(eic = eic)
+  if(!is.data.frame(code_table)) {
+
+    code_table <- get_code_table(eic = eic)
+
+  }
 
   time_codes <- unique(code_table$Unit) %>%
     lapply(\(x) {
