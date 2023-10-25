@@ -8,6 +8,10 @@
 
 get_code_table <- function(df = atref, eic) {
 
+  eic <- eic %>%
+    format(scientific = FALSE) %>%
+    as.character()
+
   if(!(eic %in% unique(df$EIC))) {
     stop("EIC not found")
   }

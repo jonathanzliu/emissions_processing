@@ -9,7 +9,7 @@
 
 get_time_codes <- function(df = atref, eic) {
 
-  code_table <- emissionsProcessing18::get_code_table(eic = eic)
+  code_table <- get_code_table(eic = eic)
 
   time_codes <- unique(code_table$Unit) %>%
     lapply(\(x) {
