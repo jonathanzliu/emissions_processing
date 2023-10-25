@@ -1,6 +1,7 @@
 #' @title Get Temporal Profiles
 #' @description Input an EIC code and obtain list of hourly, day of week, and monthly temporal profiles (ratios)
-#' @import dplyr
+#' @importFrom dplyr select mutate
+#' @importFrom stringr str_remove_all
 #' @param df Cross-referencing table
 #' @param eic EIC code
 #' @details Note: only works when the four counties use the same profile codes for a given EIC (i.e. the four counties have to have the same temporal profile)
@@ -8,7 +9,7 @@
 
 get_profile_ratios <- function(df = atref, eic) {
 
-  time_codes <- emissionsProcessing18::get_time_codes(eic = eic)
+  time_codes <- get_time_codes(eic = eic)
 
   ptpro_ratios <- names(ptpro_list) %>%
     lapply(\(z) {
