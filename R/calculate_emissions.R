@@ -1,6 +1,6 @@
 #' @title Get Hourly Emissions
 #' @description Input an EIC code and obtain a data frame (within a list) of estimated hourly emissions, by month and day of week
-#' @importFrom dplyr group_by summarize filter select pivot_longer left_join
+#' @importFrom dplyr group_by summarize filter select left_join
 #' @importFrom plyr join_all
 #' @importFrom tidyr pivot_longer
 #' @param df Cross-referencing table
